@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useProjects } from '../context/ProjectContext';
-import { CheckSquare, Square, LayoutTemplate, Search, Plus, Calendar, PlaySquare, Clock } from 'lucide-react';
+import { CheckSquare, Square, LayoutTemplate, Search, Plus, Calendar, PlaySquare } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import type { PBIProject, TaskStatus, ProjectTask } from '../types';
@@ -89,25 +89,9 @@ export const TasksPage: React.FC = () => {
     });
   }, [allTasks, filter, searchQuery]);
 
-  // Group by project
-  const tasksByProject = useMemo(() => {
-    const grouped = new Map<string, typeof filteredTasks>();
-    filteredTasks.forEach(t => {
-      if (!grouped.has(t.project.id)) {
-        grouped.set(t.project.id, []);
-      }
-      grouped.get(t.project.id)!.push(t);
-    });
-    return grouped;
-  }, [filteredTasks]);
 
-  const getStatusIcon = (status: string) => {
-    switch(status) {
-      case 'completada': return <CheckSquare size={18} color="#16a34a" />;
-      case 'en_curso': return <PlaySquare size={18} color="#3b82f6" />;
-      default: return <Square size={18} color="#94a3b8" />;
-    }
-  };
+
+
 
   return (
     <section className="projects-section">
