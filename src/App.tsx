@@ -302,7 +302,7 @@ function App() {
               </div>
             )}
 
-            {pendingTasks.length > 0 && (
+            {currentTab !== 'tasks' && pendingTasks.length > 0 && (
               <div style={{ marginBottom: '1.5rem' }}>
                 <h3 style={{ fontSize: '0.85rem', color: 'var(--primary-hover)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <CheckSquare size={14} />
