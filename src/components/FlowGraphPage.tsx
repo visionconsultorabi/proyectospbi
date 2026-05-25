@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { ReactFlow, MiniMap, Controls, Background, useNodesState, useEdgesState } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useProjects } from '../context/ProjectContext';
@@ -12,13 +12,28 @@ export const FlowGraphPage: React.FC = () => {
   const { models } = useModels();
   const { apps } = useApps();
 
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<string>('');
+
   const { initialNodes, initialEdges } = useMemo(() => {
     const nodes: any[] = [];
     const edges: any[] = [];
-    
+
+    const filteredWorkspaces = selectedWorkspaceId 
+      ? workspaces.filter(w => w.id === selectedWorkspaceId)
+      : workspaces;
+      
+    const filteredProjects = selectedWorkspaceId
+      ? projects.filter(p => p.workspaceId === selectedWorkspaceId)
+      : projects;
+
+    const modelIdsInUse = new Set(filteredProjects.map(p => p.semanticModelId));
+    const appIdsInUse = new Set(filteredProjects.map(p => p.applicationId));
+
+    const filteredModels = selectedWorkspaceId ? models.filter(m => modelIdsInUse.has(m.id)) : models;
+    const filteredApps = selectedWorkspaceId ? apps.filter(a => appIdsInUse.has(a.id)) : apps;
     
     // Add Workspace Nodes
-    workspaces.forEach((w, index) => {
+    filteredWorkspaces.forEach((w, index) => {
       nodes.push({
         id: `ws-${w.id}`,
         data: { label: `Área: ${w.name}` },
@@ -28,7 +43,7 @@ export const FlowGraphPage: React.FC = () => {
     });
 
     // Add Semantic Model Nodes
-    models.forEach((m, index) => {
+    filteredModels.forEach((m, index) => {
       nodes.push({
         id: `mod-${m.id}`,
         data: { label: `Modelo: ${m.name}` },
@@ -38,7 +53,7 @@ export const FlowGraphPage: React.FC = () => {
     });
 
     // Add App Nodes
-    apps.forEach((a, index) => {
+    filteredApps.forEach((a, index) => {
       nodes.push({
         id: `app-${a.id}`,
         data: { label: `App: ${a.name}` },
@@ -48,7 +63,7 @@ export const FlowGraphPage: React.FC = () => {
     });
 
     // Add Project Nodes and their connections
-    projects.forEach((p, index) => {
+    filteredProjects.forEach((p, index) => {
       const pId = `proj-${p.id}`;
       nodes.push({
         id: pId,
@@ -92,16 +107,35 @@ export const FlowGraphPage: React.FC = () => {
     });
 
     return { initialNodes: nodes, initialEdges: edges };
-  }, [projects, workspaces, models, apps]);
+  }, [projects, workspaces, models, apps, selectedWorkspaceId]);
 
-  const [nodes, , onNodesChange] = useNodesState(initialNodes);
-  const [edges, , onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  useEffect(() => {
+    setNodes(initialNodes);
+    setEdges(initialEdges);
+  }, [initialNodes, initialEdges, setNodes, setEdges]);
 
   return (
     <section className="projects-section" style={{ height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ marginBottom: '1rem' }}>
-        <h2 style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>Relaciones del Sistema</h2>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Visualiza cómo se conectan las áreas de trabajo, modelos, proyectos y aplicaciones.</p>
+      <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h2 style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>Relaciones del Sistema</h2>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Visualiza cómo se conectan las áreas de trabajo, modelos, proyectos y aplicaciones.</p>
+        </div>
+        <div>
+          <select 
+            value={selectedWorkspaceId} 
+            onChange={(e) => setSelectedWorkspaceId(e.target.value)}
+            style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', minWidth: '200px' }}
+          >
+            <option value="">Todas las Áreas</option>
+            {workspaces.map(w => (
+              <option key={w.id} value={w.id}>{w.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
       
       <div style={{ flex: 1, backgroundColor: 'var(--surface-color)', borderRadius: 'var(--border-radius)', border: '1px solid var(--border-color)', overflow: 'hidden' }}>

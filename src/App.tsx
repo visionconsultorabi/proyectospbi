@@ -149,9 +149,17 @@ function App() {
                 <span style={{ color: '#ef4444', fontWeight: 600 }}>Archivados: {archivedCount}</span>
               </div>
             </div>
-            <button className="btn-primary" onClick={() => { setEditingProject(null); setIsFormOpen(true); }}>
-              <PlusCircle size={18} /> Nuevo Proyecto
-            </button>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <button className="btn-secondary" onClick={() => generatePDFReport({ projects, workspaces, models, apps, users })} title="Exportar a PDF">
+                <FileText size={16} color="#e11d48" /> PDF
+              </button>
+              <button className="btn-secondary" onClick={() => generateWordReport({ projects, workspaces, models, apps, users })} title="Exportar a Word">
+                <FileDown size={16} color="#2563eb" /> Word
+              </button>
+              <button className="btn-primary" onClick={() => { setEditingProject(null); setIsFormOpen(true); }}>
+                <PlusCircle size={18} /> Nuevo Proyecto
+              </button>
+            </div>
           </div>
 
           <div className="filters-container">
@@ -234,8 +242,8 @@ function App() {
                 <CalendarIcon size={20} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'text-bottom' }} />
                 Agenda de Hoy
               </h2>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500, textTransform: 'capitalize' }}>
-                {format(new Date(), "EEEE, d 'de' MMMM", { locale: es })}
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
+                {format(new Date(), "EEEE, d 'de' MMMM", { locale: es }).replace(/^\w/, (c) => c.toUpperCase())}
               </div>
             </div>
 
@@ -362,15 +370,7 @@ function App() {
         </div>
 
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button className="btn-secondary" onClick={() => generatePDFReport({ projects, workspaces, models, apps, users })} title="Exportar a PDF">
-              <FileText size={16} color="#e11d48" /> PDF
-            </button>
-            <button className="btn-secondary" onClick={() => generateWordReport({ projects, workspaces, models, apps, users })} title="Exportar a Word">
-              <FileDown size={16} color="#2563eb" /> Word
-            </button>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap', marginLeft: 'auto' }}>
           <nav style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <button 
               className={currentTab === 'tasks' ? 'btn-primary' : 'btn-secondary'}
