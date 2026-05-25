@@ -62,7 +62,7 @@ function App() {
     p.nextUpdateDate &&
     (isBefore(parseISO(p.nextUpdateDate), new Date()) || isToday(parseISO(p.nextUpdateDate))) &&
     p.status === 'pendiente'
-  );
+  ).sort((a, b) => new Date(a.nextUpdateDate).getTime() - new Date(b.nextUpdateDate).getTime());
 
   const recentlyUpdated = projects.filter(p => 
     p.status === 'actualizado' && 
