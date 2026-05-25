@@ -109,8 +109,8 @@ export const FlowGraphPage: React.FC = () => {
     return { initialNodes: nodes, initialEdges: edges };
   }, [projects, workspaces, models, apps, selectedWorkspaceId]);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
 
   useEffect(() => {
     setNodes(initialNodes);
