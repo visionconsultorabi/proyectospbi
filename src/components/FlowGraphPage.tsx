@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { ReactFlow, MiniMap, Controls, Background, useNodesState, useEdgesState } from '@xyflow/react';
+import { ReactFlow, MiniMap, Controls, Background, useNodesState, useEdgesState, Position } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { useProjects } from '../context/ProjectContext';
 import { useWorkspaces } from '../context/WorkspaceContext';
@@ -45,6 +45,8 @@ export const FlowGraphPage: React.FC = () => {
         id: `ws-${w.id}`,
         data: { label: `Área: ${w.name}` },
         position: { x: 50, y: index * 120 },
+        sourcePosition: Position.Right,
+        targetPosition: Position.Left,
         style: { background: '#fef3c7', border: '1px solid #f59e0b', borderRadius: '8px', padding: '10px', width: 200 }
       });
     });
@@ -55,6 +57,8 @@ export const FlowGraphPage: React.FC = () => {
         id: `mod-${m.id}`,
         data: { label: `Modelo: ${m.name}` },
         position: { x: 350, y: index * 120 },
+        sourcePosition: Position.Right,
+        targetPosition: Position.Left,
         style: { background: '#dbeafe', border: '1px solid #3b82f6', borderRadius: '8px', padding: '10px', width: 200 }
       });
     });
@@ -65,6 +69,8 @@ export const FlowGraphPage: React.FC = () => {
         id: `proj-${p.id}`,
         data: { label: `Proyecto: ${p.projectName}` },
         position: { x: 650, y: index * 100 },
+        sourcePosition: Position.Right,
+        targetPosition: Position.Left,
         style: { background: '#f3f4f6', border: '1px solid #6b7280', borderRadius: '8px', padding: '10px', width: 200 }
       });
     });
@@ -75,6 +81,8 @@ export const FlowGraphPage: React.FC = () => {
         id: `app-${a.id}`,
         data: { label: `App: ${a.name}` },
         position: { x: 950, y: index * 120 },
+        sourcePosition: Position.Right,
+        targetPosition: Position.Left,
         style: { background: '#dcfce7', border: '1px solid #22c55e', borderRadius: '8px', padding: '10px', width: 200 }
       });
     });
@@ -143,16 +151,16 @@ export const FlowGraphPage: React.FC = () => {
 
   return (
     <section className="projects-section" style={{ height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div>
+      <div style={{ marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'nowrap', gap: '1rem' }}>
+        <div style={{ flex: 1 }}>
           <h2 style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>Relaciones del Sistema</h2>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Flujo de datos: Área de trabajo → Modelo Semántico → Proyecto → Aplicación.</p>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>Flujo de datos: Área de trabajo → Modelo Semántico → Proyecto → Aplicación.</p>
         </div>
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'nowrap', alignItems: 'center' }}>
           <select 
             value={selectedWorkspaceId} 
             onChange={(e) => setSelectedWorkspaceId(e.target.value)}
-            style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', minWidth: '200px' }}
+            style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', minWidth: '180px' }}
           >
             <option value="">Todas las Áreas</option>
             {workspaces.map(w => (
@@ -162,7 +170,7 @@ export const FlowGraphPage: React.FC = () => {
           <select 
             value={selectedModelId} 
             onChange={(e) => setSelectedModelId(e.target.value)}
-            style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', minWidth: '200px' }}
+            style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', minWidth: '180px' }}
           >
             <option value="">Todos los Modelos</option>
             {models.map(m => (
