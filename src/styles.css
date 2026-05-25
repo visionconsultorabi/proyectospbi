@@ -480,3 +480,39 @@ input:focus, select:focus, textarea:focus {
 .pbi-logo svg {
   filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2));
 }
+
+/* Mobile Responsive Tweaks */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 1rem;
+  }
+  
+  .header > div {
+    margin-left: 0 !important;
+    width: 100%;
+  }
+
+  nav {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .app-container {
+    padding: 1rem;
+  }
+
+  .filters-row {
+    flex-direction: column;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .projects-section > div {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+}
