@@ -16,7 +16,6 @@ export const FlowGraphPage: React.FC = () => {
     const nodes: any[] = [];
     const edges: any[] = [];
     
-    let yOffset = 0;
     
     // Add Workspace Nodes
     workspaces.forEach((w, index) => {
@@ -95,8 +94,8 @@ export const FlowGraphPage: React.FC = () => {
     return { initialNodes: nodes, initialEdges: edges };
   }, [projects, workspaces, models, apps]);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, , onNodesChange] = useNodesState(initialNodes);
+  const [edges, , onEdgesChange] = useEdgesState(initialEdges);
 
   return (
     <section className="projects-section" style={{ height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
