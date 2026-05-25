@@ -8,11 +8,28 @@ import { SemanticModelsPage } from './components/SemanticModelsPage';
 import { ApplicationsPage } from './components/ApplicationsPage';
 import { WorkspacesPage } from './components/WorkspacesPage';
 import { TasksPage } from './components/TasksPage';
+import { FlowGraphPage } from './components/FlowGraphPage';
+import { generatePDFReport, generateWordReport } from './utils/reportGenerator';
 import { useUsers } from './context/UserContext';
 import { useModels } from './context/SemanticModelContext';
 import { useApps } from './context/ApplicationContext';
 import { useWorkspaces } from './context/WorkspaceContext';
-import { PlusCircle, Calendar as CalendarIcon, LayoutDashboard, Users as UsersIcon, Database, Globe, Briefcase, CheckSquare, RotateCcw } from 'lucide-react';
+import { PlusCircle, Calendar as CalendarIcon, LayoutDashboard, Users as UsersIcon, Database, Globe, Briefcase, CheckSquare, RotateCcw, Network, FileText, FileDown } from 'lucide-react';
+
+const MOTIVATIONAL_QUOTES = [
+  "El trabajo en equipo divide la tarea y multiplica el éxito.",
+  "La buena planificación es la mitad de la batalla ganada.",
+  "Los grandes proyectos no se logran con la fuerza, sino con perseverancia.",
+  "El conflicto es una oportunidad para aprender a entender nuestras diferencias.",
+  "Visión sin acción es solo un sueño. Acción sin visión es pasar el tiempo.",
+  "La organización no es sobre perfección, es sobre eficiencia.",
+  "El éxito en un proyecto es la suma de pequeños esfuerzos repetidos día tras día."
+];
+
+const getDailyQuote = () => {
+  const dayOfYear = Math.floor((new Date().getTime() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
+  return MOTIVATIONAL_QUOTES[dayOfYear % MOTIVATIONAL_QUOTES.length];
+};
 
 import type { PBIProject } from './types';
 import { isBefore, isToday, isTomorrow, parseISO, format } from 'date-fns';
@@ -25,7 +42,7 @@ function App() {
   const { apps } = useApps();
   const { workspaces } = useWorkspaces();
   
-  const [currentTab, setCurrentTab] = useState<'projects' | 'users' | 'models' | 'apps' | 'workspaces' | 'tasks'>('tasks');
+  const [currentTab, setCurrentTab] = useState<'projects' | 'users' | 'models' | 'apps' | 'workspaces' | 'tasks' | 'relations'>('tasks');
   
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<PBIProject | null>(null);
@@ -117,6 +134,7 @@ function App() {
       case 'models': return <SemanticModelsPage />;
       case 'apps': return <ApplicationsPage />;
       case 'workspaces': return <WorkspacesPage />;
+      case 'relations': return <FlowGraphPage />;
       case 'projects': {
         const activeCount = projects.filter(p => !p.isArchived).length;
         const archivedCount = projects.filter(p => p.isArchived).length;
@@ -218,6 +236,12 @@ function App() {
               </h2>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500, textTransform: 'capitalize' }}>
                 {format(new Date(), "EEEE, d 'de' MMMM", { locale: es })}
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '1.5rem', padding: '1rem', backgroundColor: '#f0fdf4', borderLeft: '4px solid #22c55e', borderRadius: '4px' }}>
+              <div style={{ fontStyle: 'italic', color: '#166534', fontSize: '0.9rem' }}>
+                "{getDailyQuote()}"
               </div>
             </div>
 
@@ -339,6 +363,14 @@ function App() {
 
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button className="btn-secondary" onClick={() => generatePDFReport({ projects, workspaces, models, apps, users })} title="Exportar a PDF">
+              <FileText size={16} color="#e11d48" /> PDF
+            </button>
+            <button className="btn-secondary" onClick={() => generateWordReport({ projects, workspaces, models, apps, users })} title="Exportar a Word">
+              <FileDown size={16} color="#2563eb" /> Word
+            </button>
+          </div>
           <nav style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <button 
               className={currentTab === 'tasks' ? 'btn-primary' : 'btn-secondary'}
@@ -375,6 +407,12 @@ function App() {
               onClick={() => setCurrentTab('apps')}
             >
               <Globe size={16} /> Apps
+            </button>
+            <button 
+              className={currentTab === 'relations' ? 'btn-primary' : 'btn-secondary'}
+              onClick={() => setCurrentTab('relations')}
+            >
+              <Network size={16} /> Relaciones
             </button>
           </nav>
         </div>

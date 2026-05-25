@@ -86,6 +86,22 @@ export const TasksPage: React.FC = () => {
       
       const searchStr = `${t.title} ${t.project.projectName}`.toLowerCase();
       return searchStr.includes(searchQuery.toLowerCase());
+    }).sort((a, b) => {
+      // Completadas al final
+      const aCompleted = a.status === 'completada';
+      const bCompleted = b.status === 'completada';
+      
+      if (aCompleted && !bCompleted) return 1;
+      if (!aCompleted && bCompleted) return -1;
+
+      // Ordenar por fecha de vencimiento (ascendente)
+      if (a.dueDate && b.dueDate) {
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      }
+      if (a.dueDate) return -1; // Tareas con fecha primero
+      if (b.dueDate) return 1;
+
+      return 0;
     });
   }, [allTasks, filter, searchQuery]);
 
@@ -115,7 +131,7 @@ export const TasksPage: React.FC = () => {
           <form onSubmit={handleAddTask} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.25rem', color: 'var(--text-secondary)' }}>Título de la tarea</label>
+                <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.25rem', color: 'var(--text-secondary)' }}>Tarea</label>
                 <input type="text" required value={newTaskTitle} onChange={e => setNewTaskTitle(e.target.value)} style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)' }} />
               </div>
               <div>
@@ -146,7 +162,7 @@ export const TasksPage: React.FC = () => {
           <form onSubmit={handleSaveEditTask} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.25rem', color: 'var(--text-secondary)' }}>Título de la tarea</label>
+                <label style={{ display: 'block', fontSize: '0.8rem', marginBottom: '0.25rem', color: 'var(--text-secondary)' }}>Tarea</label>
                 <input type="text" required value={editingTask.title} onChange={e => setEditingTask({...editingTask, title: e.target.value})} style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)' }} />
               </div>
               <div>
@@ -209,7 +225,7 @@ export const TasksPage: React.FC = () => {
                 >
                   {task.status === 'completada' ? <CheckSquare size={20} /> : task.status === 'en_curso' ? <PlaySquare size={20} /> : <Square size={20} />}
                 </button>
-                <span style={{ fontSize: '0.85rem', fontWeight: 500, textDecoration: task.status === 'completada' ? 'line-through' : 'none', color: task.status === 'completada' ? 'var(--text-secondary)' : 'var(--text-primary)', lineHeight: '1.2' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 'normal', textDecoration: task.status === 'completada' ? 'line-through' : 'none', color: task.status === 'completada' ? 'var(--text-secondary)' : 'var(--text-primary)', lineHeight: '1.2' }}>
                   {task.title}
                 </span>
               </div>
